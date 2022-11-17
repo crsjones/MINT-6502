@@ -22,12 +22,26 @@ RAMSTART    .EQU $0000
         txs                    ;initialize stack to $01ff
         jsr  InitialiseSerial
 
+;echo typed chars
+;        jmp  echo
+
+; just transmit a
 loop:   lda   #'a'
         jsr   TxChar
-        lda   #$ff
-loop1:  dec           
+        ldx   #$ff
+loop2:  ldy   #$ff
+loop1:  dey
         bne   loop1
-        bra   loop
+        dex
+        bne   loop2
+        jmp   loop
+
+;echo typed chars
+
+echo:   
+        jsr   rxchar
+        jsr   txchar
+        jmp   echo
 
 .include "Char-6850.a65"
 

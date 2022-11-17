@@ -56,23 +56,23 @@ RDRF   .EQU   1          ;receive data register full
 TDRE   .EQU   2          ;transmit data register empty
 DCD    .EQU   4          ;data carrier detect
 CTS    .EQU   8          ;clear to send
-FE     .EQU   16          ;framing error
+FE     .EQU   16         ;framing error
 OVRN   .EQU   32         ;overrun
 PE     .EQU   64         ;parity error
-IRQ    .EQU   128         ;interrupt request
+IRQ    .EQU   128        ;interrupt request
 ;
 ; initialise ACIA
 ;----------------
 InitialiseSerial:        
-        lda    #MRESET
-        sta    CONTROL           ;reset the ACIA
+        lda    #MRESET           ;the 'real' 6850 ACIA has no reset pin so
+        sta    CONTROL           ;a software reset is required.
         NOP
-        NOP
-        NOP
+        NOP                      ;does the software reset need 
+        NOP                      ;any time to complete?
 ;initialise ACIA  8 bit word, No parity 2 stop divide by 64 for 115200 baud
         lda    #RTSLID+F8N2+CLKDIV_64
         sta    CONTROL       
-        Rts
+        rts
 ;
 ; transmit a character in a
 ;--------------------------
@@ -80,7 +80,7 @@ TxChar:
         pha                         ;save the character for later
 TxChar1: 
         lda   STATUS                ;get the ACIA status
-        and   #TDRE                 ;bit  TDRE,a is the TDRE bit high?
+        and   #TDRE                 ;is the TDRE bit high?
         beq   TxChar1               ;no, the TDR is not empty
         pla                         ;yes, get the character back
         sta   TDR                   ;and put it in the TDR
@@ -90,7 +90,10 @@ TxChar1:
 ;---------------------------------
 RxChar:  
         lda   STATUS             ;get the ACIA status
-        and   #RDRF              ;bit   RDRF,a is the RDRF bit high?
+        and   #RDRF              ;is the RDRF bit high?
         beq   RxChar             ;no, the RDR is empty
         lda   RDR                ;yes, read the received char
         rts
+        
+        
+        
