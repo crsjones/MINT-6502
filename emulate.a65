@@ -31,6 +31,6 @@ loop1:  dec
 
 .include "Char-6850.a65"
 
-        .ORG  $fffe
-        .DW   PGMSTART
+        .ORG  $fffc
+        .DW   PGMSTART        ;reset vector
         .end
